@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %} Team Update Form {% endblock %}
+
+{% block content %}
+<div class="team-form-container">
+    <h1 class="form-title">Team Update Form</h1>
+    <form action="" method="post" enctype="multipart/form-data" class="team-form">
+        {% csrf_token %}
+        {% for field in form %}
+            {% if field.field.required %}
+                <label for="{{ field.id_for_label }}">{{ field.label }} <span class="required">*</span></label>
+            {% else %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% endif %}
+            {{ field }}
+            {% if field.errors %}
+                <p class="error">{{ field.errors.as_text }}</p>
+            {% endif %}
+        {% endfor %}
+        <a href="#" onclick="history.go(-1); return false;" class="btn btn-primary">Update</a>  
+    </form>
+
+    <div class="go-back-links">
+        <a href="{% url 'main' %}" class="btn btn-secondary">Go to Main Page</a>
+        <a href="#" onclick="history.go(-1); return false;" class="btn btn-secondary">Go Back</a>
+    </div>
+</div>
+
+{% include 'teams/includes/pagination.html' with teams=page_obj %}
+
+{% endblock %}

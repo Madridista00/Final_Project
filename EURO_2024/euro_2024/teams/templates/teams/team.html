@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %} Team Detail {% endblock %}
+
+{% block content %} 
+    <div class="team-detail-container">
+        <h1 class="team-name">Team: {{ team.team }}</h1>
+        
+        <div class="team-info">
+            {% if team.url %}
+                <a href="{{ team.url }}" target="_blank">
+                    <img src="{{ team.logo.url }}" class="team-logo" alt="Team Logo">
+                </a>
+            {% else %}
+                <img src="{{ team.logo.url }}" class="team-logo" alt="Team Logo">
+            {% endif %}
+            
+            <div class="team-details">
+                <p><strong>User:</strong> {{ team.user }}</p>
+                <p><strong>Group:</strong> {{ team.group }}</p>
+                <p><strong>Squad:</strong> {{ team.squad|linebreaks|italic_bold_positions }}</p>
+                <p><strong>Qualifying:</strong> {{ team.qualifying }}</p>
+                <p><strong>Euro Best:</strong> {{ team.euro_best }}</p>
+                <p><strong>Coach:</strong> {{ team.coach }}</p>
+                <p><strong>Key Player:</strong> {{ team.key_player }}</p>
+                <p><strong>Did You Know?</strong> {{ team.did_you_know }}</p>
+            </div>
+        </div>
+
+        {% if request.user.is_superuser %}
+        <div class="team-actions">
+            <a href="{% url 'team_update' team.pk %}" class="btn btn-primary">Update Team</a>
+            <a href="{% url 'team_delete' team.pk %}" class="btn btn-danger" onclick="return ('Are you sure you want to delete this team?');">Delete Team</a>
+        </div>
+        {% endif %}
+
+        <p>
+            {% if request.user.is_superuser %}
+            <a href="{% url 'main' %}" class="btn btn-secondary">Go to Main Page</a>
+            {% endif %}
+            <a href="#" onclick="history.go(-1); return false;" class="btn btn-secondary">Go Back</a>
+        </p>
+    </div>
+
+    {% include 'teams/includes/pagination.html' with teams=page_obj %}
+{% endblock %}

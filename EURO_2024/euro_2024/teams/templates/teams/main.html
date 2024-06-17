@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %} Teams {% endblock %}
+
+{% block content %}
+    <div class="teams-container">
+        {% if request.user.is_authenticated %}
+            <p>{{ request.user }}</p>
+            <a href="{% url 'logout' %}" class="auth-link">Logout</a>
+        {% else %}
+            <p><a href="{% url 'login' %}" class="auth-link">Login</a></p>
+        {% endif %}
+
+        <h1 class="page-title">EURO 2024 TEAMS</h1>
+
+        {% if request.user.is_superuser %}
+            <p><a href="{% url 'team_create' %}" class="btn add-team-btn">Add New Team</a></p>
+        {% endif %}
+
+        <form action="" method="get" class="search-form">
+            <div class="search-bar">
+                <input type="text" name="search_query" placeholder="Search teams or groups..." value="{{ search_query }}" class="search-input">
+                <button type="submit" class="btn search-btn">Search</button>
+            </div>
+            <div class="sort-options">
+                <a href="?sort_by=alphabetical" class="btn sort-btn">Sort Alphabetically</a>
+                <a href="?sort_by=group_asc" class="btn sort-btn">Sort by Group Ascending</a>
+                <a href="?sort_by=group_desc" class="btn sort-btn">Sort by Group Descending</a>
+            </div>
+        </form>
+
+        <table class="teams-table">
+            <thead>
+                <tr>
+                    <th>Team</th>
+                    <th>Group</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                    <tr>
+                        <td>{{ team.team }}</td>
+                        <td>{{ team.group }}</td>
+                        <td class="actions">
+                            <a href="{% url 'team' team.pk %}" class="btn action-btn"><i class="fas fa-eye"></i> View</a>
+                            {% if request.user.is_superuser %}
+                                <a href="{% url 'team_update' team.pk %}" class="btn action-btn"><i class="fas fa-edit"></i> Update</a>
+                                <a href="{% url 'team_delete' team.pk %}" class="btn action-btn"><i class="fas fa-trash-alt"></i> Delete</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <div class="team-info">
+                                {% if team.url %}
+                                    <a href="{{ team.url }}" target="_blank">
+                                        <img src="{{ team.logo.url }}" alt="Image Not Found" class="team-logo">
+                                    </a>
+                                {% else %}
+                                    <img src="{{ team.logo.url }}" alt="Image Not Found" class="team-logo">
+                                {% endif %}
+                                <p>{{ team.did_you_know }}</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Add a spacer row between team information -->
+                    <tr class="spacer-row">
+                        <td colspan="3"></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'teams/includes/pagination.html' with teams=page_obj %}
+{% endblock %}
